@@ -14,5 +14,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Set image tag
+      run: echo "IMAGE_TAG=my-image-name:$(date +%s)" >> $GITHUB_ENV
+
     - name: Build the Docker image
-      run: docker build ./Cours2/app --file ./Cours2/app/Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build ./Cours2/app --file ./Cours2/app/Dockerfile --tag $IMAGE_TAG
+
+    - name: Save Docker image as a tar archive
+      run: docker save $IMAGE_TAG -o my-image.tar
+
+    - name: Upload Docker image artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: docker-image
+        path: my-image.tar
